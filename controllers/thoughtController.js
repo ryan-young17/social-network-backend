@@ -11,7 +11,7 @@ module.exports = {
     // Set up GET a single thought by _id
     getSingleThought(req, res) {
         Thought.findOne({ _id: req.params.thoughtId })
-        .select('__v')
+        .select('-__v')
         .then((thought) =>
             !thought
                 ? res.status(404).json({ message: 'There is no thought with that id!' })
@@ -22,7 +22,7 @@ module.exports = {
     // Set up POST for creating a new thought (don't forget to push the created thought's _id to the associated user's thoughts array field)
     createThought(req, res) {
         Thought.create(req.body)
-            .then((thought) => {
+            .then(({ _id }) => {
                 return User.findOneAndUpdate(
                     { _id: req.body.userId },
                     { $push: { thoughts: _id } },
@@ -89,7 +89,7 @@ module.exports = {
         Thought.findOneAndUpdate(
             { _id: req.params.thoughtId },
             { $pull: { reactions: { reactionId: req.params.reactionId } } },
-            { runValidators: true, new: true },
+            { new: true },
         )
         .then((thought) => 
             !thought

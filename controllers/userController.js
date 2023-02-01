@@ -11,7 +11,9 @@ module.exports = {
     // Set up GET a single user by _id and populate thought and friend data
     getSingleUser(req, res) {
         User.findOne({ _id: req.params.userId })
-        .select('__v')
+        .populate('thoughts')
+        .populate('friends')
+        .select('-__v')
         .then((user) =>
             !user
                 ? res.status(404).json({ message: 'There is no user with that id!' })
